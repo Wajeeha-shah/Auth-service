@@ -4,6 +4,8 @@
   "description": "The user management system",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,7 +19,10 @@
   },
   "homepage": "https://github.com/Wajeeha-shah/Auth-service#readme",
   "devDependencies": {
+    "@eslint/js": "^9.35.0",
     "@types/node": "^26.2.0",
-    "typecript": "^0.0.1-security"
+    "eslint": "^9.35.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.40.0"
   }
 }
