@@ -1,0 +1,23 @@
+{
+  "name": "auth-service",
+  "version": "1.0.0",
+  "description": "The user management system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wajeeha-shah/Auth-service.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Wajeeha-shah/Auth-service/issues"
+  },
+  "homepage": "https://github.com/Wajeeha-shah/Auth-service#readme",
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typecript": "^0.0.1-security"
+  }
+}
