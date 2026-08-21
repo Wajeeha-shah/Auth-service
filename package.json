@@ -23,7 +23,9 @@
   "homepage": "https://github.com/Wajeeha-shah/Auth-service#readme",
   "devDependencies": {
     "@eslint/js": "^9.35.0",
+    "@types/http-errors": "^2.0.5",
     "@types/node": "^26.2.0",
+    "@types/winston": "^2.4.4",
     "eslint": "^9.35.0",
     "husky": "^9.1.7",
     "nodemon": "^3.1.14",
@@ -34,6 +36,8 @@
   "dependencies": {
     "@types/express": "^5.0.6",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "http-errors": "^2.0.1",
+    "winston": "^3.19.0"
   }
 }
