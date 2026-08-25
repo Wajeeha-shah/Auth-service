@@ -11,6 +11,11 @@ app.get('/', (req, res) => {
     res.status(200).send('workingg...')
 
 })
+app.post('/auth/register', (req, res) => {
+    logger.info('POST /auth/register hit');
+    res.status(201).send('User registered successfully');
+})
+
 app.use((err: HttpError, req: express.Request, res: express.Response, next: express.NextFunction) => {
     logger.error(`Error: ${err.message}`, { stack: err.stack });
     res.status(err.status)
