@@ -2,32 +2,23 @@
 import { AppDataSource } from "../_config/data-source.js";
 import { USER } from "../entity/user.entity.js";
 import logger from "../utils/logger.js";
+import type { registerUserRequest } from "../types/auth.js";
+import { authService } from "../services/authService.js";
 
-class AuthController {
-  async register(req: Request, res: Response) {
+async class AuthController {
+  authService:authService;
+  constructor(authService:authService){
+    this.authService=authService;
+  }
+  async register(req: registerUserRequest, res: Response) {
     logger.info("POST /auth/register hit");
 
-    const { username, email, password } = req.body as {
-      username?: string;
-      email?: string;
-      password?: string;
-    };
-
-    const userRepository = AppDataSource.getRepository(USER);
-    const user = userRepository.create({
-      username: username ?? "",
-      email: email ?? "",
-      password: password ?? "",
-    });
-
-    const savedUser = await userRepository.save(user);
+    const { username, email, password } = req.body 
+await this.authService.create({ username, email, password })
 
     return res.status(201).json({
       message: "User registered successfully",
-      user: {
-        username: savedUser.username,
-        email: savedUser.email,
-      },
+    
     });
   }
 }

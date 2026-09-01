@@ -1,8 +1,9 @@
-﻿import request from "supertest";
+import request from "supertest";
 import app from "../../app.js";
 import { AppDataSource } from "../../_config/data-source.js";
 import { clearDatabase } from "../../utils/database.js";
 import { USER } from "../../entity/user.entity.js";
+import { Roles } from "../../constants/index.js";
 
 describe("User Registration POST /auth/register", () => {
   const userRepository = AppDataSource.getRepository(USER);
@@ -32,7 +33,7 @@ describe("User Registration POST /auth/register", () => {
   it("should return 201 status code when a new user is registered", async () => {
     const response = await request(app).post("/auth/register").send(newUser);
 
-    expect(response).toHaveLength(1);
+    expect(response.statusCode).toBe(201);
   });
 
   it("should persist the user in the database after registration", async () => {
@@ -48,18 +49,34 @@ describe("User Registration POST /auth/register", () => {
     expect(savedUser?.password).toBe(newUser.password);
   });
 
+  it("should assign customer role to newly registered user", async () => {
+    await request(app).post("/auth/register").send(newUser);
+
+    const savedUser = await userRepository.findOneBy({
+      email: newUser.email,
+    });
+
+    expect(savedUser?.role).toBe(Roles.CUSTOMER);
+  });
+
   it("should return correct JSON format", async () => {
     const response = await request(app).post("/auth/register").send(newUser);
 
     expect(response.headers["content-type"]).toMatch(/json/);
     expect(response.body).toEqual({
       message: "User registered successfully",
-      user: {
-        username: "testuser",
-        email: "testuser@example.com",
-      },
     });
   });
+
+  it("should return id of created employee", async () => {
+    const response = await request(app)
+      .post("/auth/register")
+      .send(newUser);
+
+    const savedUser = await userRepository.findOneBy({
+      email: newUser.email,
+    });
+
+    expect(response.body.id).toBe(savedUser?.id);
+  });
 });
-
-

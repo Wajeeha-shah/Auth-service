@@ -1,15 +1,11 @@
-﻿import type { DataSource } from "typeorm";
+import type { DataSource } from "typeorm";
 import { AppDataSource } from "../_config/data-source.js";
 
-/** Clears every registered entity so each test starts with an empty database. */
+/** Drops and rebuilds all database tables so each test starts with a completely fresh schema. */
 export async function clearDatabase(
   dataSource: DataSource = AppDataSource,
 ): Promise<void> {
-  const repositories = [...dataSource.entityMetadatas]
-    .reverse()
-    .map((metadata) => dataSource.getRepository(metadata.target));
-
-  for (const repository of repositories) {
-    await repository.clear();
-  }
+  await dataSource.dropDatabase();
+  await dataSource.synchronize();
 }
+

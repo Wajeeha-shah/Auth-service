@@ -1,18 +1,22 @@
-﻿import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Roles } from "../constants/index.js";
 
 @Entity({ name: "users" })
 export class USER {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({ unique: true })
+  @Column("varchar", { unique: true })
   username!: string;
 
-  @Column({ unique: true })
+  @Column("varchar", { unique: true })
   email!: string;
 
-  @Column()
+  @Column("varchar")
   password!: string;
+
+  @Column("varchar", { default: Roles.CUSTOMER })
+  role!: string;
 
   @CreateDateColumn()
   createdAt!: Date;
