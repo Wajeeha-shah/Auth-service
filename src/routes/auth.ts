@@ -1,12 +1,15 @@
-﻿import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import AuthController from "../controller/auth.js";
 import { authService } from "../services/authService.js";
-const router = express.Router();
-const userService:authService=new authService()
-const authController = new AuthController(userService);
+import logger from "../utils/logger.js";
 
-router.post("/auth/register", (req:Request, res:Response) => {
-  void authController.register(req, res);
+const router = express.Router();
+const userService: authService = new authService();
+const authController = new AuthController(userService, logger);
+
+router.post("/auth/register", (req: Request, res: Response, next: NextFunction) => {
+  void authController.register(req, res, next);
 });
 
 export default router;
+
