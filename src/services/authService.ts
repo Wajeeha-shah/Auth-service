@@ -9,18 +9,7 @@ export class authService {
   async create({ username, email, password }: userData) {
     const userRepository = AppDataSource.getRepository(USER);
 
-    // 1. Email presence validation
-    if (!email || !email.trim()) {
-      throw createHttpError(400, "Email is required");
-    }
-
-    // 2. Email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
-      throw createHttpError(400, "Invalid email format");
-    }
-
-    // 3. Unique email check
+    // Unique email check
     const existingUser = await userRepository.findOneBy({ email: email.trim() });
     if (existingUser) {
       throw createHttpError(400, "Email is already in use");
@@ -30,7 +19,7 @@ export class authService {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const user = userRepository.create({
-      username: username ?? "",
+      username: username.trim(),
       email: email.trim(),
       password: hashedPassword,
       role: Roles.CUSTOMER,
@@ -40,5 +29,6 @@ export class authService {
     return savedUser;
   }
 }
+
 
 

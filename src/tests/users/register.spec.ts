@@ -96,6 +96,7 @@ describe("User Registration POST /auth/register", () => {
       .send(userWithoutEmail);
 
     expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty("errors");
   });
 
   it("should return 400 status code if email format is invalid", async () => {
@@ -110,6 +111,37 @@ describe("User Registration POST /auth/register", () => {
       .send(userWithInvalidEmail);
 
     expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty("errors");
+  });
+
+  it("should return 400 status code if username is missing", async () => {
+    const userWithoutUsername = {
+      username: "",
+      email: "testuser@example.com",
+      password: "password123",
+    };
+
+    const response = await request(app)
+      .post("/auth/register")
+      .send(userWithoutUsername);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty("errors");
+  });
+
+  it("should return 400 status code if password is less than 6 characters", async () => {
+    const userWithShortPassword = {
+      username: "testuser",
+      email: "testuser@example.com",
+      password: "123",
+    };
+
+    const response = await request(app)
+      .post("/auth/register")
+      .send(userWithShortPassword);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty("errors");
   });
 
   it("should return correct JSON format", async () => {
