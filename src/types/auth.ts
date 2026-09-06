@@ -1,9 +1,11 @@
+import type { Request } from "express";
+
 export interface userData {
-  username:string,
-  email:string,
-  password:string
+  username: string;
+  email: string;
+  password: string;
 }
-export interface registerUserRequest extends Request{
-    
-  body:userData;
+
+export interface registerUserRequest extends Request {
+  body: userData;
 }

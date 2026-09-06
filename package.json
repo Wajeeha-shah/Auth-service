@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev nodemon --watch src --ext ts --exec tsx src/server.ts",
+    "generate:keys": "tsx scripts/generateKeys.ts",
     "prepare": "husky",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

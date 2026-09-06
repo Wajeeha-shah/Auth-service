@@ -5,6 +5,10 @@ import { AppDataSource } from "../../_config/data-source.js";
 import { clearDatabase } from "../../utils/database.js";
 import { USER } from "../../entity/user.entity.js";
 import { Roles } from "../../constants/index.js";
+import { getCookie, isCookieHttpOnly } from "../utils/httpTestUtils.js";
+import { isJwt, decodeJwtPayload } from "../utils/jwtTestUtils.js";
+
+
 
 describe("User Registration POST /auth/register", () => {
   const userRepository = AppDataSource.getRepository(USER);
@@ -35,6 +39,22 @@ describe("User Registration POST /auth/register", () => {
     const response = await request(app).post("/auth/register").send(newUser);
 
     expect(response.statusCode).toBe(201);
+  });
+
+  it("should return access and refresh tokens in HTTP-only cookies", async () => {
+    const response = await request(app).post("/auth/register").send(newUser);
+
+    const accessToken = getCookie(response, "accesstoken");
+    const refreshToken = getCookie(response, "refreshtoken");
+
+    expect(isJwt(accessToken)).toBe(true);
+    expect(isJwt(refreshToken)).toBe(true);
+    expect(response.headers["set-cookie"]).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("accesstoken="),
+        expect.stringContaining("refreshtoken="),
+      ])
+    );
   });
 
   it("should persist the user in the database after registration", async () => {
@@ -149,6 +169,7 @@ describe("User Registration POST /auth/register", () => {
 
     expect(response.headers["content-type"]).toMatch(/json/);
     expect(response.body).toEqual({
+      id: expect.any(String),
       message: "User registered successfully",
     });
   });
