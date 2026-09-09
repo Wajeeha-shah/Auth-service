@@ -87,10 +87,27 @@ function encode(value: object): string {
 /**
  * Creates a signed RS256 JWT for the given user and token type.
  */
-export function createToken(user: TokenUser, type: TokenType, jti?: string): string {
+/**
+ * Creates a signed RS256 JWT for the given user and token type.
+ *
+ * @param overrideExpiresInSeconds - Optional. When provided, overrides the
+ *   default duration. Pass a negative value (e.g. -1) to create an already-
+ *   expired token — useful in tests without real time travel.
+ *   ⚠️  Never use this parameter outside of test code.
+ */
+export function createToken(
+  user: TokenUser,
+  type: TokenType,
+  jti?: string,
+  overrideExpiresInSeconds?: number
+): string {
   const now = Math.floor(Date.now() / 1000);
 
   const header = encode({ alg: "RS256", typ: "JWT" });
+
+  const expiresIn = overrideExpiresInSeconds !== undefined
+    ? overrideExpiresInSeconds
+    : durations[type];
 
   const payload: TokenPayload = {
     sub:  user.id,
@@ -98,7 +115,7 @@ export function createToken(user: TokenUser, type: TokenType, jti?: string): str
     role: user.role,
     type,
     iat:  now,
-    exp:  now + durations[type],
+    exp:  now + expiresIn,
   };
 
   if (jti) {

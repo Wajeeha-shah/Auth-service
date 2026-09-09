@@ -15,6 +15,7 @@ const {
   DB_PASSWORD,
   JWT_PRIVATE_KEY,
   JWT_PUBLIC_KEY,
+  JWKS_URI,
 } = process.env;
 export const Config = Object.freeze({
   PORT,
@@ -25,5 +26,6 @@ export const Config = Object.freeze({
   DB_PASSWORD,
   JWT_PRIVATE_KEY,
   JWT_PUBLIC_KEY,
+  JWKS_URI,
   NODE_ENV: nodeEnv,
 });

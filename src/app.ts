@@ -18,11 +18,12 @@ app.get("/", (req, res) => {
 
 app.use((err: HttpError, req: express.Request, res: express.Response, next: express.NextFunction) => {
   logger.error(`Error: ${err.message}`, { stack: err.stack });
-  res.status(err.status).json({
+  const statusCode = err.status || err.statusCode || 500;
+  res.status(statusCode).json({
     error: {
       type: err.name,
       message: err.message,
-      status: err.status,
+      status: statusCode,
     },
   });
 });

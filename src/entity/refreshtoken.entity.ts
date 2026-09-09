@@ -18,7 +18,7 @@ export class RefreshToken {
   @JoinColumn({ name: "userId" })
   user!: USER;
 
-  @Column()
+  @Column("uuid")
   userId!: string;
 
   @Column({ type: "timestamp" })

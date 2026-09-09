@@ -5,6 +5,7 @@ import { authService } from "../services/authService.js";
 import logger from "../utils/logger.js";
 import registerValidator from "../validators/register-validator.js";
 import loginValidator from "../validators/login-validator.js";
+import { authenticate, type AuthenticatedRequest } from "../middleware/authenticate.js";
 
 const router = express.Router();
 const userService: authService = new authService();
@@ -30,6 +31,21 @@ router.post(
   "/auth/refresh",
   (req: Request, res: Response, next: NextFunction) => {
     void authController.refresh(req, res, next);
+  }
+);
+
+router.get(
+  "/auth/self",
+  authenticate as express.RequestHandler,
+  (req: Request, res: Response, next: NextFunction) => {
+    void authController.self(req as AuthenticatedRequest, res, next);
+  }
+);
+
+router.get(
+  "/.well-known/jwks.json",
+  (req: Request, res: Response, next: NextFunction) => {
+    void authController.jwks(req, res, next);
   }
 );
 

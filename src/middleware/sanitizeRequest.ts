@@ -26,10 +26,20 @@ export const sanitizeRequest = (
     req.body = sanitizeValue(req.body) as Record<string, unknown>;
   }
   if (req.query && typeof req.query === "object") {
-    req.query = sanitizeValue(req.query) as Record<string, unknown>;
+    Object.defineProperty(req, "query", {
+      value: sanitizeValue(req.query),
+      writable: true,
+      configurable: true,
+      enumerable: true,
+    });
   }
   if (req.params && typeof req.params === "object") {
-    req.params = sanitizeValue(req.params) as Record<string, unknown>;
+    Object.defineProperty(req, "params", {
+      value: sanitizeValue(req.params),
+      writable: true,
+      configurable: true,
+      enumerable: true,
+    });
   }
   next();
 };

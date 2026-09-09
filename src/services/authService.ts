@@ -92,6 +92,18 @@ export class authService {
 
     return true;
   }
+
+  async deleteRefreshToken(id: number): Promise<void> {
+    const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
+
+    const record = await refreshTokenRepository.findOneBy({ id });
+
+    if (!record) {
+      throw createHttpError(404, "Refresh token record not found");
+    }
+
+    await refreshTokenRepository.delete({ id });
+  }
 }
 
 
