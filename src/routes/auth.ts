@@ -42,6 +42,14 @@ router.get(
   }
 );
 
+router.post(
+  "/auth/logout",
+  authenticate as express.RequestHandler,
+  (req: Request, res: Response, next: NextFunction) => {
+    void authController.logout(req as AuthenticatedRequest, res, next);
+  }
+);
+
 router.get(
   "/.well-known/jwks.json",
   (req: Request, res: Response, next: NextFunction) => {

@@ -126,4 +126,36 @@ describe("Auth Endpoints (Login and Refresh)", () => {
       expect(failedRes.statusCode).toBe(401);
     });
   });
+
+  describe("POST /auth/logout", () => {
+    it("should return 200, clear cookies, and delete refresh token from DB", async () => {
+      const loginRes = await request(app).post("/auth/login").send({
+        email: testUser.email,
+        password: testUser.password,
+      });
+
+      const accessToken = getCookie(loginRes, "accesstoken");
+      const refreshToken = getCookie(loginRes, "refreshtoken");
+
+      const dbUser = await userRepository.findOneBy({ email: testUser.email });
+      const countBefore = await rtRepository.count({ where: { userId: dbUser!.id } });
+      expect(countBefore).toBe(1);
+
+      const logoutRes = await request(app)
+        .post("/auth/logout")
+        .set("Cookie", `accesstoken=${accessToken}; refreshtoken=${refreshToken}`);
+
+      expect(logoutRes.statusCode).toBe(200);
+
+      // Verify cookies cleared
+      const clearedAccess = getCookie(logoutRes, "accesstoken");
+      const clearedRefresh = getCookie(logoutRes, "refreshtoken");
+      expect(clearedAccess).toBe("");
+      expect(clearedRefresh).toBe("");
+
+      // Verify refresh token deleted from DB
+      const countAfter = await rtRepository.count({ where: { userId: dbUser!.id } });
+      expect(countAfter).toBe(0);
+    });
+  });
 });

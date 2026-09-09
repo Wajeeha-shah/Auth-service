@@ -180,6 +180,45 @@ class AuthController {
     }
   }
 
+  async logout(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      this.logger.info("POST /auth/logout hit");
+
+      const cookieHeader = req.headers.cookie;
+      if (cookieHeader) {
+        const cookies = Object.fromEntries(
+          cookieHeader.split("; ").map((c) => {
+            const [key, ...v] = c.split("=");
+            return [key, decodeURIComponent(v.join("="))];
+          })
+        );
+
+        const rawRefreshToken = cookies["refreshtoken"];
+        if (rawRefreshToken) {
+          try {
+            const decoded = verifyToken(rawRefreshToken);
+            if (decoded && decoded.jti) {
+              const recordId = parseInt(decoded.jti, 10);
+              if (!isNaN(recordId)) {
+                await this.authService.deleteRefreshToken(recordId).catch(() => {});
+              }
+            }
+          } catch (err) {
+            this.logger.warn("Invalid refresh token during logout", { err });
+          }
+        }
+      }
+
+      const secure = process.env.NODE_ENV === "prod" ? "; Secure" : "";
+      res.append("Set-Cookie", `accesstoken=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax${secure}`);
+      res.append("Set-Cookie", `refreshtoken=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax${secure}`);
+
+      return res.status(200).json({ message: "Logged out successfully" });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   jwks(req: Request, res: Response, next: NextFunction) {
     try {
       // We will implement JWKS response properly based on the public key.
