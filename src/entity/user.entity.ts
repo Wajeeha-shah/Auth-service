@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Roles } from "../constants/index.js";
+import { Tenant } from "./tenant.entity.js";
 
 @Entity({ name: "users" })
 export class USER {
@@ -18,6 +19,10 @@ export class USER {
   @Column("varchar", { default: Roles.CUSTOMER })
   role!: string;
 
+  @ManyToOne(() => Tenant, { onDelete: "SET NULL", nullable: true })
+  tenant!: Tenant | null;
+
   @CreateDateColumn()
   createdAt!: Date;
 }
+
