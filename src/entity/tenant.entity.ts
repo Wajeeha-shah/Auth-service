@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from "typeorm";
 
 @Entity({ name: "tenants" })
@@ -16,6 +17,7 @@ export class Tenant {
 
   @Column("varchar", { length: 255 })
   address!: string;
+
 
   @UpdateDateColumn()
   updatedAt!: Date;

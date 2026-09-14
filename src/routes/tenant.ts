@@ -31,6 +31,7 @@ const validateReq = (req: Request, res: Response, next: NextFunction) => {
 
 router.post(
   "/tenants",
+  authenticate as express.RequestHandler,
   tenantValidator,
   validateReq,
   (req: Request, res: Response, next: NextFunction) => {
