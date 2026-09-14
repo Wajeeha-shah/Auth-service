@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import express from "express";
 import authRouter from "./routes/auth.js";
+import tenantRouter from "./routes/tenant.js";
 import logger from "./utils/logger.js";
 import type { HttpError } from "http-errors";
 import { sanitizeRequest } from "./middleware/sanitizeRequest.js";
@@ -10,6 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(sanitizeRequest);
 app.use(authRouter);
+app.use(tenantRouter);
 
 app.get("/", (req, res) => {
   logger.info("GET / hit");
