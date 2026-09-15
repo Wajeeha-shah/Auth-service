@@ -2,6 +2,7 @@ import "reflect-metadata";
 import express from "express";
 import authRouter from "./routes/auth.js";
 import tenantRouter from "./routes/tenant.js";
+import userRouter from "./routes/user.js";
 import logger from "./utils/logger.js";
 import type { HttpError } from "http-errors";
 import { sanitizeRequest } from "./middleware/sanitizeRequest.js";
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use(sanitizeRequest);
 app.use(authRouter);
 app.use(tenantRouter);
+app.use(userRouter);
 
 app.get("/", (req, res) => {
   logger.info("GET / hit");

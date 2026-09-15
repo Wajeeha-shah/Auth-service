@@ -62,7 +62,23 @@ describe("Tenant Create POST /tenants", () => {
     expect(response.statusCode).toBe(401);
   });
 
-  it("should return 201 status code when a new tenant is created by authenticated user", async () => {
+  it("should return 403 status code if user does not have admin role", async () => {
+    const customerToken = jwks.token({
+      sub: "999",
+      id: "999",
+      role: Roles.CUSTOMER,
+      type: "access"
+    });
+
+    const response = await request(app)
+      .post("/tenants")
+      .set("Cookie", `accesstoken=${customerToken}`)
+      .send(tenantData);
+
+    expect(response.statusCode).toBe(403);
+  });
+
+  it("should return 201 status code when a new tenant is created by authenticated admin", async () => {
     const response = await request(app)
       .post("/tenants")
       .set("Cookie", `accesstoken=${adminToken}`)
