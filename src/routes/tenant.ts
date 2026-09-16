@@ -1,5 +1,5 @@
 import express from "express";
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import TenantController from "../controller/TenantController.js";
 import { TenantService } from "../services/TenantService.js";
 import logger from "../utils/logger.js";
@@ -31,7 +31,7 @@ const validateReq = (req: Request, res: Response, next: NextFunction) => {
 
 router.post(
   "/tenants",
-  authenticate as express.RequestHandler,
+  authenticate,
   canAccess([Roles.ADMIN]),
   tenantValidator,
   validateReq,

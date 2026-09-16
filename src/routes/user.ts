@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import { UserController } from "../controller/UserController.js";
 import { UserService } from "../services/UserService.js";
@@ -20,7 +20,7 @@ const userController = new UserController(userService, logger);
 
 router.get(
   "/users",
-  authenticate as express.RequestHandler,
+  authenticate,
   canAccess([Roles.ADMIN]),
   (req: Request, res: Response, next: NextFunction) => {
     void userController.getAll(req as AuthenticatedRequest, res, next);
@@ -29,7 +29,7 @@ router.get(
 
 router.get(
   "/users/:id",
-  authenticate as express.RequestHandler,
+  authenticate,
   canAccess([Roles.ADMIN]),
   (req: Request, res: Response, next: NextFunction) => {
     void userController.getOne(req as AuthenticatedRequest, res, next);
@@ -38,7 +38,7 @@ router.get(
 
 router.patch(
   "/users/:id",
-  authenticate as express.RequestHandler,
+  authenticate,
   canAccess([Roles.ADMIN]),
   userUpdateValidator,
   (req: Request, res: Response, next: NextFunction) => {
@@ -48,7 +48,7 @@ router.patch(
 
 router.delete(
   "/users/:id",
-  authenticate as express.RequestHandler,
+  authenticate,
   canAccess([Roles.ADMIN]),
   (req: Request, res: Response, next: NextFunction) => {
     void userController.remove(req as AuthenticatedRequest, res, next);

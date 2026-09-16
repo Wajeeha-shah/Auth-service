@@ -4,6 +4,7 @@
   "description": "The user management system",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "dev": "cross-env NODE_ENV=dev nodemon --watch src --ext ts --exec tsx src/server.ts",
     "generate:keys": "tsx scripts/generateKeys.ts",
     "prepare": "husky",

@@ -98,4 +98,5 @@ const validateUser = async (
 // Export combined middleware
 // ---------------------------------------------------------------------------
 
-export const authenticate = [verifyJwt, validateUser];
+import type { RequestHandler } from "express";
+export const authenticate = [verifyJwt, validateUser as unknown as RequestHandler];

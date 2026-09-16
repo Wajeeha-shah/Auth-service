@@ -1,6 +1,6 @@
-import { Response, NextFunction } from "express";
+import type { Response, NextFunction } from "express";
 import createHttpError from "http-errors";
-import { AuthenticatedRequest } from "./authenticate.js";
+import type { AuthenticatedRequest } from "./authenticate.js";
 
 export const canAccess = (roles: string[]) => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

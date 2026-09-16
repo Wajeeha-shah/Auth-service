@@ -1,4 +1,4 @@
-﻿import type { Response, NextFunction } from "express";
+import type { Response, NextFunction } from "express";
 import { validationResult, matchedData } from "express-validator";
 import { UserService } from "../services/UserService.js";
 import { Logger } from "winston";
@@ -16,8 +16,10 @@ export class UserController {
     try {
       const users = await this.userService.findAll();
 
-      // Strip password from every user before sending
-      const safeUsers = users.map(({ password, ...rest }) => rest);
+      const safeUsers = users.map((u) => {
+        const { password, ...rest } = u as any;
+        return rest;
+      });
 
       return res.status(200).json(safeUsers);
     } catch (err) {
@@ -30,7 +32,7 @@ export class UserController {
     try {
       const { id } = req.params;
       const user = await this.userService.findById(id);
-      const { password, ...safeUser } = user;
+      const { password, ...safeUser } = user as any;
 
       return res.status(200).json(safeUser);
     } catch (err) {
@@ -52,7 +54,7 @@ export class UserController {
       this.logger.info("Updating user", { id, fields: Object.keys(data) });
 
       const updated = await this.userService.update(id, data);
-      const { password, ...safeUser } = updated;
+      const { password, ...safeUser } = updated as any;
 
       return res.status(200).json(safeUser);
     } catch (err) {

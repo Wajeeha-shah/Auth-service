@@ -1,6 +1,7 @@
 import type { Response, NextFunction, Request } from "express";
 import { validationResult, matchedData } from "express-validator";
 import logger from "../utils/logger.js";
+import { Logger } from "winston";
 import type { registerUserRequest, userData } from "../types/auth.js";
 import { authService } from "../services/authService.js";
 import { createAuthTokens, tokenMaxAge, verifyToken } from "../services/tokenService.js";
@@ -11,9 +12,9 @@ import type { AuthenticatedRequest } from "../middleware/authenticate.js";
 
 class AuthController {
   private authService: authService;
-  private logger: typeof logger;
+  private logger: Logger;
 
-  constructor(authService: authService, logger: typeof logger) {
+  constructor(authService: authService, logger: Logger) {
     this.authService = authService;
     this.logger = logger;
   }

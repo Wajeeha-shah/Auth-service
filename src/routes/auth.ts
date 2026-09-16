@@ -36,7 +36,7 @@ router.post(
 
 router.get(
   "/auth/self",
-  authenticate as express.RequestHandler,
+  authenticate,
   (req: Request, res: Response, next: NextFunction) => {
     void authController.self(req as AuthenticatedRequest, res, next);
   }
@@ -44,7 +44,7 @@ router.get(
 
 router.post(
   "/auth/logout",
-  authenticate as express.RequestHandler,
+  authenticate,
   (req: Request, res: Response, next: NextFunction) => {
     void authController.logout(req as AuthenticatedRequest, res, next);
   }

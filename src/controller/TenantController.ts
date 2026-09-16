@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { TenantService } from "../services/TenantService.js";
 import { Logger } from "winston";
 

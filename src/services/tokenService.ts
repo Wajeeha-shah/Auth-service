@@ -153,7 +153,7 @@ export function verifyToken(token: string): TokenPayload {
     throw new Error("Invalid token format");
   }
 
-  const [header, payload, signature] = parts;
+  const [header, payload, signature] = parts as [string, string, string];
   const signingInput = `${header}.${payload}`;
 
   const verifier = createVerify("RSA-SHA256");
