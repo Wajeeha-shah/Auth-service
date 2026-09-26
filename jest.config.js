@@ -7,11 +7,15 @@ export default {
   ...presetConfig,
   testEnvironment: "node",
   coverageProvider: "v8",
+  extensionsToTreatAsEsm: [".ts"],
+  moduleNameMapper: {
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+  },
   collectCoverageFrom: [
     "src/**/*.ts",
     "!src/**/tests/**",
     "!src/migration/**",
     "!src/subscriber/**",
-    "!**/node_modules/**"
-  ]
+    "!**/node_modules/**",
+  ],
 };

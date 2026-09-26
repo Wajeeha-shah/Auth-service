@@ -3,9 +3,18 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["dist/**", "node_modules/**"],
+    ignores: [
+      "dist/**",
+      "coverage/**",
+      "node_modules/**",
+      "certs/**",
+      "**/*.d.ts",
+      "**/*.js",
+      "**/*.js.map",
+    ],
   },
   {
+    files: ["**/*.ts"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",

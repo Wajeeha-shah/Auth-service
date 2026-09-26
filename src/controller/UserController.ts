@@ -2,6 +2,7 @@ import type { Response, NextFunction } from "express";
 import { validationResult, matchedData } from "express-validator";
 import { UserService } from "../services/UserService.js";
 import { Logger } from "winston";
+import createHttpError from "http-errors";
 import type { AuthenticatedRequest } from "../middleware/authenticate.js";
 import type { UpdateUserData, UpdateUserRequest } from "../types/user.js";
 
@@ -27,10 +28,21 @@ export class UserController {
     }
   }
 
+  private getRouteId(req: { params: Record<string, string | string[] | undefined> }, key: string): string {
+    const value = req.params[key];
+    const id = Array.isArray(value) ? value[0] : value;
+
+    if (!id || typeof id !== "string") {
+      throw createHttpError(400, `Invalid ${key} parameter`);
+    }
+
+    return id;
+  }
+
   // GET /users/:id
   async getOne(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
+      const id = this.getRouteId(req, "id");
       const user = await this.userService.findById(id);
       const { password, ...safeUser } = user as any;
 
@@ -48,7 +60,7 @@ export class UserController {
     }
 
     try {
-      const { id } = req.params;
+      const id = this.getRouteId(req, "id");
       const data = matchedData(req) as UpdateUserData;
 
       this.logger.info("Updating user", { id, fields: Object.keys(data) });
@@ -65,7 +77,7 @@ export class UserController {
   // DELETE /users/:id
   async remove(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
+      const id = this.getRouteId(req, "id");
 
       this.logger.info("Deleting user", { id });
 
