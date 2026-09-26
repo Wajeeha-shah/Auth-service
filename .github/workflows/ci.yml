@@ -1,4 +1,4 @@
-name: CI
+﻿name: CI
 
 on:
   push:
@@ -59,8 +59,8 @@ jobs:
           SONAR_HOST_URL: https://sonarcloud.io
         with:
           args: >-
-            -Dsonar.projectKey=${{ github.repository }}
-            -Dsonar.organization=${{ github.repository_owner }}
+            -Dsonar.projectKey=Wajeeha-shah_Auth-service
+            -Dsonar.organization=wajeeha-shah
 
       - name: Test with coverage
         run: npm run test:coverage
@@ -115,3 +115,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
