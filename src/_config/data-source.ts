@@ -13,6 +13,7 @@ export const AppDataSource = new DataSource({
   username: Config.DB_USER as string,
   password: Config.DB_PASSWORD as string,
   database: Config.DB_NAME as string,
+  ssl: Config.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
 
   synchronize: Config.NODE_ENV === 'dev' || Config.NODE_ENV === 'test' ? true : false,
   logging: true,
