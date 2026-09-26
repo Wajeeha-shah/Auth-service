@@ -18,7 +18,7 @@ export class UserController {
       const users = await this.userService.findAll();
 
       const safeUsers = users.map((u) => {
-        const { password, ...rest } = u as any;
+        const { password: _password, ...rest } = u;
         return rest;
       });
 
@@ -44,7 +44,7 @@ export class UserController {
     try {
       const id = this.getRouteId(req, "id");
       const user = await this.userService.findById(id);
-      const { password, ...safeUser } = user as any;
+      const { password: _password, ...safeUser } = user;
 
       return res.status(200).json(safeUser);
     } catch (err) {
@@ -66,7 +66,7 @@ export class UserController {
       this.logger.info("Updating user", { id, fields: Object.keys(data) });
 
       const updated = await this.userService.update(id, data);
-      const { password, ...safeUser } = updated as any;
+      const { password: _password, ...safeUser } = updated;
 
       return res.status(200).json(safeUser);
     } catch (err) {

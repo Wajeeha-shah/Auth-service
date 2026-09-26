@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
   res.status(200).send("workingg...");
 });
 
-app.use((err: HttpError, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: HttpError, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   logger.error(`Error: ${err.message}`, { stack: err.stack });
   const statusCode = err.status || err.statusCode || 500;
   res.status(statusCode).json({

@@ -7,6 +7,7 @@ import userUpdateValidator from "../validators/user-update-validator.js";
 import { authenticate, type AuthenticatedRequest } from "../middleware/authenticate.js";
 import { canAccess } from "../middleware/canAccess.js";
 import { Roles } from "../constants/index.js";
+import type { UpdateUserRequest } from "../types/user.js";
 
 const router = express.Router();
 const userService = new UserService();
@@ -42,7 +43,7 @@ router.patch(
   canAccess([Roles.ADMIN]),
   userUpdateValidator,
   (req: Request, res: Response, next: NextFunction) => {
-    void userController.update(req as any, res, next);
+    void userController.update(req as UpdateUserRequest, res, next);
   }
 );
 
