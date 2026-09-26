@@ -10,7 +10,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly logger: Logger
-  ) {}
+  ) { }
 
   // GET /users
   async getAll(req: AuthenticatedRequest, res: Response, next: NextFunction) {
