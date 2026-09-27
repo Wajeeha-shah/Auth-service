@@ -63,9 +63,16 @@ describe("Tenant Create POST /tenants", () => {
   });
 
   it("should return 403 status code if user does not have admin role", async () => {
+    const customerUser = new USER();
+    customerUser.username = "customer";
+    customerUser.email = "customer@example.com";
+    customerUser.password = "password123";
+    customerUser.role = Roles.CUSTOMER;
+    await userRepository.save(customerUser);
+
     const customerToken = jwks.token({
-      sub: "999",
-      id: "999",
+      sub: String(customerUser.id),
+      id: String(customerUser.id),
       role: Roles.CUSTOMER,
       type: "access"
     });

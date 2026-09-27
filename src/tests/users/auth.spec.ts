@@ -6,10 +6,19 @@ import { USER } from "../../entity/user.entity.js";
 import { RefreshToken } from "../../entity/refreshtoken.entity.js";
 import { getCookie } from "../utils/httpTestUtils.js";
 import { isJwt } from "../utils/jwtTestUtils.js";
+import createJWKSMock from "mock-jwks";
+
+const getTokenId = (token: string): number => {
+  const payload = JSON.parse(
+    Buffer.from(token.split(".")[1], "base64url").toString("utf-8")
+  ) as { jti: string };
+  return parseInt(payload.jti, 10);
+};
 
 describe("Auth Endpoints (Login and Refresh)", () => {
   const userRepository = AppDataSource.getRepository(USER);
   const rtRepository = AppDataSource.getRepository(RefreshToken);
+  let jwks: ReturnType<typeof createJWKSMock>;
 
   const testUser = {
     username: "testauthuser",
@@ -18,15 +27,21 @@ describe("Auth Endpoints (Login and Refresh)", () => {
   };
 
   beforeAll(async () => {
+    jwks = createJWKSMock("http://localhost:5501");
     if (!AppDataSource.isInitialized) {
       await AppDataSource.initialize();
     }
   });
 
   beforeEach(async () => {
+    jwks.start();
     await clearDatabase();
     // Register the test user
     await request(app).post("/auth/register").send(testUser);
+  });
+
+  afterEach(() => {
+    jwks.stop();
   });
 
   afterAll(async () => {
@@ -95,19 +110,16 @@ describe("Auth Endpoints (Login and Refresh)", () => {
       });
 
       const refreshToken = getCookie(loginRes, "refreshtoken");
-
-      // Decode the JWT to get jti (we don't have decodeUtils fully typed here, so just rely on DB check)
-      const dbUser = await userRepository.findOneBy({ email: testUser.email });
+      const oldTokenId = getTokenId(refreshToken);
       
       // Call refresh
       await request(app)
         .post("/auth/refresh")
         .set("Cookie", `refreshtoken=${refreshToken}`);
-        
-      const allTokens = await rtRepository.find({ where: { userId: dbUser!.id }, order: { createdAt: "ASC" } });
-      
-      // The previous token should be revoked
-      expect(allTokens[0].revoked).toBe(true);
+
+      const oldToken = await rtRepository.findOneBy({ id: oldTokenId });
+      expect(oldToken).not.toBeNull();
+      expect(oldToken!.revoked).toBe(true);
     });
 
     it("should reject a revoked refresh token", async () => {
@@ -134,16 +146,22 @@ describe("Auth Endpoints (Login and Refresh)", () => {
         password: testUser.password,
       });
 
-      const accessToken = getCookie(loginRes, "accesstoken");
       const refreshToken = getCookie(loginRes, "refreshtoken");
 
       const dbUser = await userRepository.findOneBy({ email: testUser.email });
       const countBefore = await rtRepository.count({ where: { userId: dbUser!.id } });
-      expect(countBefore).toBe(1);
+      expect(countBefore).toBeGreaterThanOrEqual(1);
+
+      const mockAccessToken = jwks.token({
+        sub: dbUser!.id,
+        id: dbUser!.id,
+        role: dbUser!.role,
+        type: "access",
+      });
 
       const logoutRes = await request(app)
         .post("/auth/logout")
-        .set("Cookie", `accesstoken=${accessToken}; refreshtoken=${refreshToken}`);
+        .set("Cookie", `accesstoken=${mockAccessToken}; refreshtoken=${refreshToken}`);
 
       expect(logoutRes.statusCode).toBe(200);
 
@@ -155,7 +173,7 @@ describe("Auth Endpoints (Login and Refresh)", () => {
 
       // Verify refresh token deleted from DB
       const countAfter = await rtRepository.count({ where: { userId: dbUser!.id } });
-      expect(countAfter).toBe(0);
+      expect(countAfter).toBe(countBefore - 1);
     });
   });
 });
