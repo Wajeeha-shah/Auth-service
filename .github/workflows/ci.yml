@@ -18,6 +18,7 @@ jobs:
   quality:
     name: Lint, build, and test
     runs-on: ubuntu-latest
+    environment: TEST_DB
     timeout-minutes: 15
 
     env:
@@ -51,6 +52,17 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Validate SonarQube token
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          response="$(curl --fail --silent --show-error --user "${SONAR_TOKEN}:" https://sonarcloud.io/api/authentication/validate)"
+          if [[ "$response" != *'"valid":true'* ]]; then
+            echo "SONAR_TOKEN is missing or invalid. Check the repository Actions secret."
+            exit 1
+          fi
+          echo "SonarQube token is valid."
 
       - name: SonarQube analysis
         uses: SonarSource/sonarqube-scan-action@v5
@@ -115,4 +127,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+
 
