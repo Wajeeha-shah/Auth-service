@@ -3,8 +3,6 @@ import app from "../../app.js";
 import { AppDataSource } from "../../_config/data-source.js";
 import { clearDatabase } from "../../utils/database.js";
 import { USER } from "../../entity/user.entity.js";
-import { getCookie } from "../utils/httpTestUtils.js";
-import { createToken } from "../../services/tokenService.js";
 import { Roles } from "../../constants/index.js";
 import createJWKSMock from "mock-jwks";
 

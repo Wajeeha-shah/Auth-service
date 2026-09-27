@@ -1,6 +1,5 @@
 import type { Response, NextFunction, Request } from "express";
 import { validationResult, matchedData } from "express-validator";
-import logger from "../utils/logger.js";
 import { Logger } from "winston";
 import type { registerUserRequest, userData } from "../types/auth.js";
 import { authService } from "../services/authService.js";
@@ -123,8 +122,9 @@ class AuthController {
       let decoded;
       try {
         decoded = verifyToken(rawRefreshToken);
-      } catch (err: any) {
-        throw createHttpError(401, `Invalid refresh token: ${err.message}`);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Unknown token error";
+        throw createHttpError(401, `Invalid refresh token: ${message}`);
       }
 
       if (decoded.type !== "refresh") {
@@ -173,7 +173,7 @@ class AuthController {
       }
 
       // Return user data without password
-      const { password, ...userData } = user;
+      const { password: _password, ...userData } = user;
       
       return res.status(200).json(userData);
     } catch (err) {

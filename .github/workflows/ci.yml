@@ -18,17 +18,33 @@ jobs:
   quality:
     name: Lint, build, and test
     runs-on: ubuntu-latest
+    environment: TEST_DB_NAME
     timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: auth_service_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d auth_service_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     env:
       NODE_ENV: test
-      DB_HOST: ${{ secrets.SUPABASE_TEST_DB_HOST }}
-      DB_PORT: ${{ secrets.SUPABASE_TEST_DB_PORT }}
-      DB_NAME: ${{ secrets.SUPABASE_TEST_DB_NAME }}
-      DB_USER: ${{ secrets.SUPABASE_TEST_DB_USER }}
-      DB_PASSWORD: ${{ secrets.SUPABASE_TEST_DB_PASSWORD }}
-      DB_SSL: "true"
-      JWKS_URI: ${{ secrets.TEST_JWKS_URI }}
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: auth_service_test
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_SSL: "false"
+      JWKS_URI: http://localhost:5501
 
     steps:
       - name: Checkout
@@ -52,16 +68,26 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Validate SonarQube token
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          response="$(curl --fail --silent --show-error --user "${SONAR_TOKEN}:" https://sonarcloud.io/api/authentication/validate)"
+          if [[ "$response" != *'"valid":true'* ]]; then
+            echo "SONAR_TOKEN is missing or invalid. Check the repository Actions secret."
+            exit 1
+          fi
+          echo "SonarQube token is valid."
+
       - name: SonarQube analysis
-        if: ${{ secrets.SONAR_TOKEN != '' }}
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
         with:
           args: >-
-            -Dsonar.projectKey=${{ github.repository }}
-            -Dsonar.organization=${{ github.repository_owner }}
+            -Dsonar.projectKey=Wajeeha-shah_Auth-service
+            -Dsonar.organization=wajeeha-shah
 
       - name: Test with coverage
         run: npm run test:coverage
@@ -80,6 +106,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: quality
     runs-on: ubuntu-latest
+    environment: TEST_DB_NAME
     timeout-minutes: 15
     permissions:
       contents: read
@@ -116,3 +143,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+
+
+

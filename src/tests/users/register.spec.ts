@@ -5,8 +5,8 @@ import { AppDataSource } from "../../_config/data-source.js";
 import { clearDatabase } from "../../utils/database.js";
 import { USER } from "../../entity/user.entity.js";
 import { Roles } from "../../constants/index.js";
-import { getCookie, isCookieHttpOnly } from "../utils/httpTestUtils.js";
-import { isJwt, decodeJwtPayload } from "../utils/jwtTestUtils.js";
+import { getCookie } from "../utils/httpTestUtils.js";
+import { isJwt } from "../utils/jwtTestUtils.js";
 
 
 
