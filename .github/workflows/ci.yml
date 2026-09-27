@@ -18,7 +18,7 @@ jobs:
   quality:
     name: Lint, build, and test
     runs-on: ubuntu-latest
-    environment: TEST_DB
+    environment: TEST_DB_NAME
     timeout-minutes: 15
 
     env:
@@ -127,6 +127,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
 
 
 
