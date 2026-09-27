@@ -1,4 +1,4 @@
-﻿name: CI
+name: CI
 
 on:
   push:
@@ -21,15 +21,30 @@ jobs:
     environment: TEST_DB_NAME
     timeout-minutes: 15
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: auth_service_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d auth_service_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
       NODE_ENV: test
-      DB_HOST: ${{ secrets.SUPABASE_TEST_DB_HOST }}
-      DB_PORT: ${{ secrets.SUPABASE_TEST_DB_PORT }}
-      DB_NAME: ${{ secrets.SUPABASE_TEST_DB_NAME }}
-      DB_USER: ${{ secrets.SUPABASE_TEST_DB_USER }}
-      DB_PASSWORD: ${{ secrets.SUPABASE_TEST_DB_PASSWORD }}
-      DB_SSL: "true"
-      JWKS_URI: ${{ secrets.TEST_JWKS_URI }}
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: auth_service_test
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_SSL: "false"
+      JWKS_URI: http://localhost:5501
 
     steps:
       - name: Checkout
@@ -91,6 +106,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: quality
     runs-on: ubuntu-latest
+    environment: TEST_DB_NAME
     timeout-minutes: 15
     permissions:
       contents: read

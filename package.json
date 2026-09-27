@@ -61,5 +61,8 @@
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.31",
     "winston": "^3.19.0"
+  },
+  "overrides": {
+    "msw": "2.12.2"
   }
 }
